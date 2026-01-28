@@ -1,57 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RecruitmentApi1._0.Data;
-using RecruitmentApi1._0.DTOs;
-using RecruitmentApi1._0.Models;
-using RecruitmentApi1._0.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RecruitmentApi1._0.Controllers;
 
 [ApiController]
-[Route("auth")]
-public class AuthController : ControllerBase
+[Route("api/test")]
+public class TestController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly JwtTokenService _jwtService;
-
-    public AuthController(AppDbContext context, JwtTokenService jwtService)
+    [HttpGet("public")]
+    public IActionResult Public()
     {
-        _context = context;
-        _jwtService = jwtService;
+        return Ok("Публічний ендпоінт");
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDto dto)
+    [Authorize]
+    [HttpGet("authorized")]
+    public IActionResult Authorized()
     {
-        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-            return BadRequest("Email already exists");
-
-        var user = new User
-        {
-            Name = dto.Name,
-            Email = dto.Email,
-            PasswordHash = PasswordHasher.Hash(dto.Password),
-            Role = "User"
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        return Ok("Registered successfully");
+        return Ok("Доступ тільки з токеном");
     }
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDto dto)
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin")]
+    public IActionResult AdminOnly()
     {
-        var passwordHash = PasswordHasher.Hash(dto.Password);
-
-        var user = await _context.Users.FirstOrDefaultAsync(u =>
-            u.Email == dto.Email && u.PasswordHash == passwordHash);
-
-        if (user == null)
-            return Unauthorized("Invalid credentials");
-
-        var token = _jwtService.GenerateToken(user);
-        return Ok(new { token });
+        return Ok("Доступ тільки для Admin");
     }
 }
