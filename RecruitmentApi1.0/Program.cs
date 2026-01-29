@@ -21,7 +21,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Authentication (JWT – базова конфігурація)
+// 🔹 CACHING
+builder.Services.AddMemoryCache();
+
+// Authentication (JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -48,7 +51,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    //app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -57,13 +59,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // =======================
-// CONTROLLERS
+// ENDPOINTS
 // =======================
+
 app.MapControllers();
 
-// =======================
-// MINIMAL API
-// =======================
+// Minimal API
 app.MapGet("/minimal/ping", () => "Minimal API працює");
 
 app.Run();
