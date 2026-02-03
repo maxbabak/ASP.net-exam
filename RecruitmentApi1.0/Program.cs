@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RecruitmentApi1._0.Data;
+using RecruitmentApi1._0.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 // SERVICES
 // =======================
 
-// Controllers
 builder.Services.AddControllers();
 
 // DbContext + SQLite
@@ -21,8 +21,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 🔹 CACHING
+// Caching
 builder.Services.AddMemoryCache();
+
+// 🔹 Hosted Service
+builder.Services.AddHostedService<HealthCheckHostedService>();
 
 // Authentication (JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -63,8 +66,6 @@ app.UseAuthorization();
 // =======================
 
 app.MapControllers();
-
-// Minimal API
 app.MapGet("/minimal/ping", () => "Minimal API працює");
 
 app.Run();
