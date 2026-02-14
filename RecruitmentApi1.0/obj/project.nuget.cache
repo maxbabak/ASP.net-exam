@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Sd3F3CbvjLQ=",
+  "dgSpecHash": "A52rx30LIaI=",
   "success": true,
   "projectFilePath": "C:\\Users\\admin\\Desktop\\back-end\\ASP.net\\RecruitmentApi1.0\\RecruitmentApi1.0\\RecruitmentApi1.0.csproj",
   "expectedPackageFiles": [
@@ -21,6 +21,7 @@
     "C:\\Users\\admin\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\8.0.1\\microsoft.identitymodel.protocols.openidconnect.8.0.1.nupkg.sha512",
     "C:\\Users\\admin\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.15.0\\microsoft.identitymodel.tokens.8.15.0.nupkg.sha512",
     "C:\\Users\\admin\\.nuget\\packages\\microsoft.openapi\\2.3.0\\microsoft.openapi.2.3.0.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\serilog\\4.3.1\\serilog.4.3.1.nupkg.sha512",
     "C:\\Users\\admin\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.11\\sqlitepclraw.bundle_e_sqlite3.2.1.11.nupkg.sha512",
     "C:\\Users\\admin\\.nuget\\packages\\sqlitepclraw.core\\2.1.11\\sqlitepclraw.core.2.1.11.nupkg.sha512",
     "C:\\Users\\admin\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.11\\sqlitepclraw.lib.e_sqlite3.2.1.11.nupkg.sha512",

@@ -3,31 +3,42 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RecruitmentApi1._0.Data;
 using RecruitmentApi1._0.Services;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =======================
-// SERVICES
-// =======================
+// ================= SERILOG =================
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+// ================= SERVICES =================
 
 builder.Services.AddControllers();
 
-// DbContext + SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=recruitment.db"));
 
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Caching
 builder.Services.AddMemoryCache();
 
-// 🔹 Hosted Service
+// 🔹 Scrutor auto-DI
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<ITestService>()
+    .AddClasses(c => c.Where(t => t.Name.EndsWith("Service")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+
+// HostedService
 builder.Services.AddHostedService<HealthCheckHostedService>();
 
-// Authentication (JWT)
+// JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -37,19 +48,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = false,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("SUPER_SECRET_KEY_12345"))
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes("SUPER_SECRET_KEY_12345"))
         };
     });
 
-// Authorization
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// =======================
-// MIDDLEWARE
-// =======================
+// ================= MIDDLEWARE =================
+
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
@@ -57,13 +68,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-// =======================
-// ENDPOINTS
-// =======================
 
 app.MapControllers();
 app.MapGet("/minimal/ping", () => "Minimal API працює");

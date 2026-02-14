@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.AspNetCore.Mvc;
+using RecruitmentApi1._0.Services;
+using Serilog;
 
 namespace RecruitmentApi1._0.Controllers;
 
@@ -8,47 +8,17 @@ namespace RecruitmentApi1._0.Controllers;
 [Route("api/test")]
 public class TestController : ControllerBase
 {
-    private readonly IMemoryCache _cache;
+    private readonly ITestService _service;
 
-    public TestController(IMemoryCache cache)
+    public TestController(ITestService service)
     {
-        _cache = cache;
+        _service = service;
     }
 
-    [HttpGet("cached-time")]
-    public IActionResult GetCachedTime()
+    [HttpGet]
+    public IActionResult Get()
     {
-        const string cacheKey = "current_time";
-
-        if (!_cache.TryGetValue(cacheKey, out string time))
-        {
-            time = DateTime.Now.ToString("HH:mm:ss");
-
-            _cache.Set(
-                cacheKey,
-                time,
-                TimeSpan.FromSeconds(30) // кеш на 30 секунд
-            );
-        }
-
-        return Ok(new
-        {
-            Time = time,
-            Cached = true
-        });
-    }
-
-    [Authorize]
-    [HttpGet("authorized")]
-    public IActionResult Authorized()
-    {
-        return Ok("Доступ тільки з токеном");
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet("admin")]
-    public IActionResult AdminOnly()
-    {
-        return Ok("Доступ тільки для Admin");
+        Log.Information("GET api/test викликано");
+        return Ok(_service.GetMessage());
     }
 }
